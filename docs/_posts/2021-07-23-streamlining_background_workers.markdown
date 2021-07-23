@@ -52,7 +52,7 @@ This means we should try to run multiple Sidekiq processes on a performance L dy
 
 ---
 
-### **Workers: Idempotent and Small**
+### **Workers: Idempotent + Small**
 
 **Idempotent** - meaning we can run the workers repeatedly w/o bad results. This'll cut down on headaches down the road should unintended results arise from erroneous retries.
 
