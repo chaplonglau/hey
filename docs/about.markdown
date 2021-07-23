@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About
+title: hey
 permalink: /about/
 ---
 
-hello. my name is chap. i'm an life-long learner with some thoughts.
+my name is chap. i'm an life-long learner with some thoughts on engineering. feel free to reach out and share some ideas!
