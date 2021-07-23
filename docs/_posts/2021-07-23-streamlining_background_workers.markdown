@@ -10,7 +10,7 @@ We were supporting two background job frameworks - legacy workers tended to be o
 
 The goal was to streamline our background job workers and set a golden standard moving forward. This article will showcase our learnings and illustrate the process and guidelines we found to be optimal.
 
-**Deciding on a framework**
+### **Sidekiq vs Resque**
 
 First off, let's differentiate between Sidekiq and Resque.
 
@@ -22,7 +22,7 @@ Due to its better support, features, and efficiency, we quickly decided to adopt
 
 We chose not to utilize Rails6 ActiveJob framework, as pure Sidekiq is more performant in processing and may have compatibility issues. More info [here][source-3] and [here][source-4].
 
-**Queues: Less = More Performance**
+### **Queues: Less = More Performance**
 
 Previously, we were creating new queues based on job types and domains. On Resque, our application was running over 50 unique queues.
 
@@ -38,17 +38,17 @@ We found our Sidekiq dynos to be more performant with less queues. So instead of
 
 So instead of staring at a huge nonsensical Procfile, we now have a really clean and intuitive queue strategy for new and existing jobs.
 
-**Dynos: Perf-L dynos > Perf-M dynos**
+### **Dynos: Perf-L dynos > Perf-M dynos**
 
 Performance L dynos ($500) cost twice as much as Performance M dynos ($250), but offer ~4 times the resources (12x vs 50x) - meaning they're twice the bang per buck.
 
 This means we should try to run multiple Sidekiq processes on a performance L dyno first, rather than trying to scale and add on multiple performance M dynos.
 
-**Workers: Idempotent and Small**
+### **Workers: Idempotent and Small**
 
 **Idempotent** - meaning we can run the workers repeatedly w/o bad results. This'll cut down on headaches down the road should unintended results arise from erroneous retries.
 
-```jsx
+```ruby
 # BAD
 class SendDMCAEmailWorker
   def perform(user_id)
@@ -70,9 +70,8 @@ end
 
 In the case of a worker that takes a long time to execute, our goal is to split up the main job into multiple smaller jobs and utilize parallelization if possible. Rather than have one worker process (lets say 10 seconds) one thing for ten users (100 seconds), we want to spawn ten jobs to process one thing for one user (10 seconds!).
 
-```jsx
+```ruby
 # BAD
-
 class XYZWorker
   def perform(user_ids)
     user_ids.each do |user_id|
@@ -83,7 +82,6 @@ class XYZWorker
 end
 
 # GOOD
-
 class XYZQueuerWorker
   def perform(user_ids)
     user_ids.each do |user_id|
@@ -100,7 +98,9 @@ class XYZWorker
 end
 ```
 
-**Bringing it all together - Visibility, Reliability, and Scalability**
+### **Bringing it all together**
+
+**Visibility, Reliability, and Scalability**
 
 The final piece of our background jobs overhaul - we cared specifically about seeing metrics on job performance, success rates, and failure rates at a moment's glance.
 
