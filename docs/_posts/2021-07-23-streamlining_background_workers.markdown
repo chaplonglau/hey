@@ -10,6 +10,8 @@ We were supporting two background job frameworks - legacy workers tended to be o
 
 The goal was to streamline our background job workers and set a golden standard moving forward. This article will showcase our learnings and illustrate the process and guidelines we found to be optimal.
 
+---
+
 ### **Sidekiq vs Resque**
 
 First off, let's differentiate between Sidekiq and Resque.
@@ -21,6 +23,8 @@ Resque is process based - meaning Resque will compile a copy of your application
 Due to its better support, features, and efficiency, we quickly decided to adopt Sidekiq Enterprise as our primary and sole background framework.
 
 We chose not to utilize Rails6 ActiveJob framework, as pure Sidekiq is more performant in processing and may have compatibility issues. More info [here][source-3] and [here][source-4].
+
+---
 
 ### **Queues: Less = More Performance**
 
@@ -38,11 +42,15 @@ We found our Sidekiq dynos to be more performant with less queues. So instead of
 
 So instead of staring at a huge nonsensical Procfile, we now have a really clean and intuitive queue strategy for new and existing jobs.
 
+---
+
 ### **Dynos: Perf-L dynos > Perf-M dynos**
 
-Performance L dynos ($500) cost twice as much as Performance M dynos ($250), but offer ~4 times the resources (12x vs 50x) - meaning they're twice the bang per buck.
+Heroku Performance L dynos ($500) cost twice as much as Performance M dynos ($250), but offer ~4 times the resources (12x vs 50x) - meaning they're twice the bang per buck.
 
 This means we should try to run multiple Sidekiq processes on a performance L dyno first, rather than trying to scale and add on multiple performance M dynos.
+
+---
 
 ### **Workers: Idempotent and Small**
 
@@ -97,6 +105,7 @@ class XYZWorker
   end
 end
 ```
+---
 
 ### **Bringing it all together**
 
@@ -106,7 +115,9 @@ The final piece of our background jobs overhaul - we cared specifically about se
 
 There are a myriad of reporting tools out there - we chose a combination of in-house tools, NewRelic, and Bugsnag. Once we were able to get metrics in, we hooked in pagerduty alerts on critical statuses:  queue latency, queue backfill size, job failure rate - ex: if the critical queue gets backed up above a certain threshold, we want to be alerted immediately to remedy that.
 
-**Conclusion**
+---
+
+### **Conclusion**
 
 It's hard to quantify numerically the effectiveness of all these improvements, but we were able to audit and migrate all our existing jobs from Resque onto Sidekiq and *see* performance increases on Sidekiq despite doubling the workload. Perhaps more importantly, we realized decoding and decreasing the complexity of our system of itself has countless implicit benefits for engineering happiness.
 
