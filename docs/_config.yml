@@ -21,7 +21,7 @@
 title: chap
 email: chaplonglau@gmail.com
 description: 🙌 🙌 🙌
-baseurl: /PROJECT
+# baseurl: /PROJECT
 url: http://chaplonglau.github.io
 github_username:  chaplonglau
 author: "Chap-Long Lau"
