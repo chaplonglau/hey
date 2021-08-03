@@ -1,10 +1,10 @@
 ---
 layout: post
-title:  "Streamlining Background Workers"
+title:  "Streamlining Background Workers from Resque to Sidekiq on Heroku"
 date:   2021-07-23 12:38:13 -0400
 ---
 
-As with every rapidly-scaling startup, technical debt from hasty deploys and legacy practices piles up quickly. We soon found our suite of background workers to be in a disarray.
+As with every rapidly-scaling startup, technical debt from hasty deploys and legacy practices piles up quickly. We soon found our suite of background workers to be in disarray.
 
 We were supporting two background job frameworks - legacy workers tended to be on Resque, whereas newer workers tended to be on Sidekiq. Resque jobs tended to be slower, inefficient, and backed up the queue. Most disturbingly, we found that we had no visibility over the jobs running on Resque. Jobs would routinely fail and disappear altogether without proper alerting - **we were often in the dark as to what and why things went wrong**.
 
