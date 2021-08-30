@@ -12,7 +12,7 @@ The goal was to streamline our background job workers and set a golden standard 
 
 ---
 
-### **Sidekiq vs Resque**
+### Sidekiq vs Resque
 
 First off, let's differentiate between Sidekiq and Resque.
 
@@ -26,7 +26,7 @@ We chose not to utilize Rails6 ActiveJob framework, as pure Sidekiq is more perf
 
 ---
 
-### **Queues: Less = More Performance**
+### Queues: Less = More Performance
 
 Previously, we were creating new queues based on job types and domains. On Resque, our application was running over 50 unique queues.
 
@@ -44,7 +44,7 @@ So instead of staring at a huge nonsensical Procfile, we now have a really clean
 
 ---
 
-### **Dynos: Perf-L dynos > Perf-M dynos**
+### Dynos: Perf-L dynos > Perf-M dynos
 
 Heroku Performance L dynos ($500) cost twice as much as Performance M dynos ($250), but offer ~4 times the resources (12x vs 50x) - meaning they're twice the bang per buck.
 
@@ -52,7 +52,7 @@ This means we should try to run multiple Sidekiq processes on a performance L dy
 
 ---
 
-### **Workers: Idempotent + Small**
+### Workers: Idempotent + Small
 
 **Idempotent** - meaning we can run the workers repeatedly w/o bad results. This'll cut down on headaches down the road should unintended results arise from erroneous retries.
 
@@ -107,7 +107,7 @@ end
 ```
 ---
 
-### **Bringing it all together**
+### Bringing it all together
 
 **Visibility, Reliability, and Scalability**
 
@@ -117,7 +117,7 @@ There are a myriad of reporting tools out there - we chose a combination of in-h
 
 ---
 
-### **Conclusion**
+### Conclusion
 
 It's hard to quantify numerically the effectiveness of all these improvements, but we were able to audit and migrate all our existing jobs from Resque onto Sidekiq and *see* performance increases on Sidekiq despite doubling the workload. Perhaps more importantly, we realized decoding and decreasing the complexity of our system of itself has countless implicit benefits for engineering happiness.
 
